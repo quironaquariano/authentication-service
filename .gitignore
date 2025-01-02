@@ -1,6 +1,6 @@
 # Dir
-*/__pycache__
+**/__pycache__
 .vscode
 
-# files
+# Files
 .env
