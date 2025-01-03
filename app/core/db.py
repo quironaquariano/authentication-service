@@ -12,12 +12,14 @@ class Database:
     def create_tables(self):
         Base.metadata.create_all(bind=self.engine)
 
+    def drop_tables(self):
+        """Remove todas as tabelas definidas no modelo Base."""
+        Base.metadata.drop_all(bind=self.engine)
+
     def get_session(self):
         db = self.session_local()
+        print(f"Using database engine: {self.engine.url}")  # Depuração
         try:
             yield db
         finally:
             db.close()
-
-
-database = Database(settings.DATABASE_URL)

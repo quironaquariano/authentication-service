@@ -1,12 +1,15 @@
 from sqlalchemy.orm import Session
 from app.models.user import User
+from app.schemas.auth import UserResponse
 
 
 class UserRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def create(self, username: str, email: str, hashed_password: str) -> User:
+    def create(
+        self, username: str, email: str, hashed_password: str
+    ) -> UserResponse:
         user = User(
             username=username,
             email=email,
