@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# microservices-ecomerce-api
-=======
 # **Auth Service**
 
 The **Auth Service** is a standalone authentication module built with **FastAPI**. It offers robust APIs for user registration, login, and JWT token generation and validation. Designed for seamless integration into larger systems, such as e-commerce platforms, the service is highly extensible, with planned support for role-based access control (RBAC) and other advanced features.
@@ -45,4 +42,3 @@ The **Auth Service** is a standalone authentication module built with **FastAPI*
 - **Infrastructure:** Docker and Docker Compose
 
 ---
->>>>>>> F01-implemtent-auth

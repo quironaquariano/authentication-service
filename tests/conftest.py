@@ -1,79 +1,61 @@
-# Configuração para Testes
-from fastapi.testclient import TestClient
+import os
 import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.core.db import Database
-from app.main import app
+from app.main import app, database
+from app.models.base import Base
 
-# Configurar o banco de dados de teste
-TEST_DATABASE_URL = "sqlite:///:memory:"
+# Configure test database
+db_path = r"tests/test.db"
+TEST_DATABASE_URL = f"sqlite:///{db_path}"
 
 
-@pytest.fixture(scope="function")
-def test_database():
-    """Configura um banco de dados de teste com SQLite em memória."""
-    test_engine = create_engine(
+@pytest.fixture(scope="session")
+def test_engine():
+    """
+    Create an SQLite file-based engine for testing.
+    """
+    return create_engine(
         TEST_DATABASE_URL, connect_args={"check_same_thread": False}
     )
-    TestSessionLocal = sessionmaker(
-        autocommit=False, autoflush=False, bind=test_engine
-    )
-
-    test_db = Database(TEST_DATABASE_URL)
-    test_db.engine = test_engine
-    test_db.session_local = TestSessionLocal
-
-    # Criar as tabelas no banco de teste
-    test_db.create_tables()
-    yield test_db
-    # Remover as tabelas após o teste
-    test_db.drop_tables()
 
 
-@pytest.fixture(scope="function")
-def db_session(test_database):
-    """Gera uma sessão do banco de dados para os testes."""
-    db = test_database.get_session()
-    yield from db
+@pytest.fixture(scope="session")
+def test_session_local(test_engine):
+    """
+    Create a sessionmaker bound to the test engine.
+    """
+    return sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
 
 
 @pytest.fixture(scope="session", autouse=True)
-def override_database_dependency():
+def setup_test_database(test_engine, test_session_local):
     """
-    Sobrescreve a dependência de banco de dados para o escopo de sessão de teste.
+    Set up the test database: create tables and override dependencies.
     """
-    test_database_url = "sqlite:///:memory:"
-    test_database = Database(test_database_url)
+    # Reconfigure the database instance for testing
+    database.configure(TEST_DATABASE_URL)
+    database.engine = test_engine
+    database.session_local = test_session_local
 
-    def override_get_session():
-        yield from test_database.get_session()
+    # Create all tables
+    Base.metadata.create_all(bind=test_engine)
 
-    # Substituir a dependência no FastAPI
-    app.dependency_overrides[Database.get_session] = override_get_session
+    yield database
+
+    # Drop all tables after tests
+    Base.metadata.drop_all(bind=test_engine)
+
+    # Remove the test database file
+    if os.path.exists(db_path):
+        os.remove(db_path)
 
 
 @pytest.fixture(scope="function")
 def test_client():
     """
-    Gera um cliente de teste do FastAPI, configurado para usar o banco de dados de teste.
+    Create a FastAPI test client configured to use the test database.
     """
-    # Configurar o banco de dados de teste
-    test_database_url = "sqlite:///:memory:"
-    test_database = Database(test_database_url)
-
-    # Criar as tabelas no banco de teste
-    test_database.create_tables()
-
-    def override_get_session():
-        yield from test_database.get_session()
-
-    # Substituir a dependência no FastAPI
-    app.dependency_overrides[Database.get_session] = override_get_session
-
-    # Retornar o cliente de teste
     client = TestClient(app)
     yield client
-
-    # Limpar o banco após os testes
-    test_database.drop_tables()
