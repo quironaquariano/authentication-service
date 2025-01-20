@@ -20,7 +20,7 @@ COPY pyproject.toml poetry.lock ./
 
 # install all app dependencies
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi
+    && poetry install --no-interaction --no-ansi --no-root
 
 # Copy app source code
 COPY ./app ./app
