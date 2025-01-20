@@ -11,32 +11,22 @@ db_path = r"tests/test.db"
 TEST_DATABASE_URL = f"sqlite:///{db_path}"
 
 
-@pytest.fixture(scope="session")
-def test_engine():
-    """
-    Create an SQLite file-based engine for testing.
-    """
-    return create_engine(
-        TEST_DATABASE_URL, connect_args={"check_same_thread": False}
-    )
-
-
-@pytest.fixture(scope="session")
-def test_session_local(test_engine):
-    """
-    Create a sessionmaker bound to the test engine.
-    """
-    return sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
-
-
 @pytest.fixture(scope="session", autouse=True)
-def setup_test_database(test_engine, test_session_local):
+def setup_test_database():
     """
     Set up the test database: create tables and override dependencies.
     """
     # Reconfigure the database instance for testing
     database.configure(TEST_DATABASE_URL)
+
+    test_engine = create_engine(
+        TEST_DATABASE_URL, connect_args={"check_same_thread": False}
+    )
     database.engine = test_engine
+
+    test_session_local = sessionmaker(
+        autocommit=False, autoflush=False, bind=test_engine
+    )
     database.session_local = test_session_local
 
     # Create all tables
