@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.routes import auth
+from app.routes import rbac
 from app.core.db import database
 from app.core.config import settings
 
@@ -16,3 +17,4 @@ database.create_tables()
 app.include_router(
     auth.router, prefix="/authentication", tags=["Authentication"]
 )
+app.include_router(rbac.router, prefix="/rbac", tags=["RBAC"])

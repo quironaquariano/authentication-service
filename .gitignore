@@ -2,8 +2,9 @@
 **/__pycache__
 .vscode
 .pytest_cache
-
+authservice
 
 # Files
 *.env
 *.db
+*.dockerignore
