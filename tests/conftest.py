@@ -42,6 +42,15 @@ def setup_test_database():
         os.remove(db_path)
 
 
+@pytest.fixture
+def test_session(setup_test_database):
+    session = setup_test_database.session_local()
+    try:
+        yield session
+    finally:
+        session.close()
+
+
 @pytest.fixture(scope="function")
 def test_client():
     """

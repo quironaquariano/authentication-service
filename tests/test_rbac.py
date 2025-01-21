@@ -17,7 +17,7 @@ PROTECTED_ENDPOINT = "/rbac/protected-endpoint"
 def create_user(
     session: Session, username: str, email: str, password: str
 ) -> User:
-    """Create or retrieve a user in the database."""
+    """Helper to Create or retrieve a user in the database."""
     user = session.query(User).filter_by(email=email).first()
     if user is None:
         user = User(
@@ -32,7 +32,7 @@ def create_user(
 
 
 def create_role(session: Session, name: str) -> Role:
-    """Create or retrieve a Role in the database."""
+    """Helper to Create or retrieve a Role in the database."""
     role = session.query(Role).filter_by(name=name).first()
     if role is None:
         role = Role(name=name)
@@ -43,7 +43,7 @@ def create_role(session: Session, name: str) -> Role:
 
 
 def create_permission(session: Session, name: str) -> Permission:
-    """Create or retrieve a Permission in the database."""
+    """Helper to Create or retrieve a Permission in the database."""
     permission = session.query(Permission).filter_by(name=name).first()
     if permission is None:
         permission = Permission(name=name)
@@ -56,7 +56,7 @@ def create_permission(session: Session, name: str) -> Permission:
 def create_role_with_permissions(
     session: Session, role_name: str, permissions: list[str]
 ) -> Role:
-    """Create a role and assign permissions."""
+    """Helper to Create a role and assign permissions."""
     role = session.query(Role).filter_by(name=role_name).first()
     if role is None:
         role = Role(name=role_name)
@@ -103,13 +103,6 @@ def assign_role_to_user(session: Session, user: User, role: Role):
 
 
 # Fixtures
-@pytest.fixture
-def test_session(setup_test_database):
-    session = setup_test_database.session_local()
-    try:
-        yield session
-    finally:
-        session.close()
 
 
 @pytest.fixture
