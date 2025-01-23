@@ -7,10 +7,8 @@ from app.models.user import User
 from passlib.hash import bcrypt
 
 # Constants
-USERNAME = "user1"
-USER_EMAIL = "user1@ex.co"
-USER_PASSWORD = "user1pw"
-PROTECTED_ENDPOINT = "/rbac/protected-endpoint"
+ROUTE_PREFIX = "/api/v1/users"
+PROTECTED_ENDPOINT = f"{ROUTE_PREFIX}/protected-endpoint"
 
 
 # Helpers
@@ -84,8 +82,8 @@ def authenticate_user(
 ) -> str:
     """Authenticate a user and return the access token."""
     response = test_client.post(
-        url="/authentication/login",
-        json={"email": email, "password": password},
+        url="/api/v1/auth/login",
+        data={"username": email, "password": password},
     )
     assert response.status_code == 200, f"Login failed: {response.text}"
     return response.json().get("access_token")
@@ -103,15 +101,13 @@ def assign_role_to_user(session: Session, user: User, role: Role):
 
 
 # Fixtures
-
-
 @pytest.fixture
 def test_authenticated_user(test_client: TestClient, test_session: Session):
     user = create_user(
         session=test_session,
-        username=USERNAME,
-        email=USER_EMAIL,
-        password=USER_PASSWORD,
+        username="user0",
+        email="user0@a.c",
+        password="user0pw",
     )
     role = create_role_with_permissions(
         session=test_session,
@@ -120,7 +116,7 @@ def test_authenticated_user(test_client: TestClient, test_session: Session):
     )
 
     assign_role_to_user(test_session, user, role)
-    token = authenticate_user(test_client, USER_EMAIL, USER_PASSWORD)
+    token = authenticate_user(test_client, user.email, password="user0pw")
     test_client.headers.update({"Authorization": f"Bearer {token}"})
     return test_client
 
@@ -168,13 +164,13 @@ class TestRBAC:
 
     def test_create_role(self, test_authenticated_user: TestClient):
         response = test_authenticated_user.post(
-            "/rbac/create-role", params={"name": "test-role"}
+            f"{ROUTE_PREFIX}/create-role", params={"name": "test-role"}
         )
         assert response.status_code == 200
 
     def test_create_permissions(self, test_authenticated_user: TestClient):
         response = test_authenticated_user.post(
-            "/rbac/create-permission",
+            f"{ROUTE_PREFIX}/create-permission",
             params={"name": ["permission-test-1", "permission-test-2"]},
         )
         assert response.status_code == 200
@@ -188,14 +184,12 @@ class TestRBAC:
         permission2 = create_permission(test_session, "assign-permission2")
 
         response = test_authenticated_user.post(
-            "/rbac/assign-permissions",
+            f"{ROUTE_PREFIX}/assign-permissions",
             json={
                 "role_name": role.name,
                 "permission_name": [permission.name, permission2.name],
             },
         )
-
-        print(response.content)
         assert response.status_code == 200
 
     def test_assign_user_role(
@@ -210,9 +204,8 @@ class TestRBAC:
         role = create_role(test_session, "specific-user-role")
 
         response = test_authenticated_user.post(
-            url="/rbac/assign-role",
+            url=f"{ROUTE_PREFIX}/assign-role",
             json={"user_email": user.email, "role_name": role.name},
         )
-        print(response.json())
         assert response.status_code == 200
         assert response.json().get("message") == "Role assigned successfully"

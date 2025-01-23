@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.dependecies.rbac import rbac
 from app.dependecies.auth import auth_dependencies
@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.post("/create-role")
-def create_role(
+async def create_role(
     name: str,
     db: Session = Depends(database.get_session),
     current_user: User = Depends(auth_dependencies.ge_current_user),
@@ -23,7 +23,7 @@ def create_role(
 
 
 @router.post("/create-permission")
-def create_permission(
+async def create_permission(
     name: str,
     db: Session = Depends(database.get_session),
     current_user: User = Depends(auth_dependencies.ge_current_user),
@@ -34,7 +34,7 @@ def create_permission(
 
 
 @router.post("/assign-permissions")
-def assign_permissions(
+async def assign_permissions(
     form: AssignPermissionForm,
     db: Session = Depends(database.get_session),
     current_user=Depends(auth_dependencies.ge_current_user),
@@ -47,7 +47,7 @@ def assign_permissions(
 
 
 @router.post("/assign-role")
-def assign_role(
+async def assign_role(
     form: AssignRoleForm,
     db: Session = Depends(database.get_session),
     current_user=Depends(auth_dependencies.ge_current_user),
@@ -58,7 +58,7 @@ def assign_role(
 
 
 @router.get("/roles")
-def get_roles_list(
+async def get_roles_list(
     db: Session = Depends(database.get_session),
     current_user=Depends(auth_dependencies.ge_current_user),
 ):
@@ -68,7 +68,7 @@ def get_roles_list(
 
 
 @router.get("/users")
-def get_users_list(
+async def get_users_list(
     db: Session = Depends(database.get_session),
     current_user=Depends(auth_dependencies.ge_current_user),
 ):
@@ -78,7 +78,7 @@ def get_users_list(
 
 
 @router.get("/permissions")
-def get_permissions_list(
+async def get_permissions_list(
     db: Session = Depends(database.get_session),
     current_user=Depends(auth_dependencies.ge_current_user),
 ):
@@ -89,7 +89,7 @@ def get_permissions_list(
 
 # For testing
 @router.get("/protected-endpoint")
-def protected_endpoint(
+async def protected_endpoint(
     db: Session = Depends(database.get_session),
     current_user=Depends(auth_dependencies.ge_current_user),
 ):

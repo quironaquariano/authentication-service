@@ -3,6 +3,8 @@ from passlib.hash import bcrypt
 from app.models.user import User
 from sqlalchemy.orm import Session
 
+ROUTE_PREFIX = "/api/v1/auth"
+
 
 def create_user(session: Session, username: str, email: str, password: str):
     """Helper to create a user on database"""
@@ -22,11 +24,11 @@ def create_user(session: Session, username: str, email: str, password: str):
 class TestAuth:
     """Tests related to Authentication functionality."""
 
-    def test_register_user(self, test_client: TestClient):
+    def test_register(self, test_client: TestClient):
         """Test the user registration endpoint."""
 
         response = test_client.post(
-            "/authentication/register",
+            f"{ROUTE_PREFIX}/register",
             json={
                 "username": "testuser",
                 "email": "test@example.com",
@@ -37,7 +39,7 @@ class TestAuth:
             response.status_code == 200
         ), f"Unexpected status code: {response.status_code}"
 
-    def test_login_user(self, test_client: TestClient, test_session: Session):
+    def test_login(self, test_client: TestClient, test_session: Session):
         """Test the user login endpoint"""
 
         # Create a user
@@ -49,9 +51,10 @@ class TestAuth:
 
         # Login with valid credentials
         response = test_client.post(
-            "/authentication/login",
-            json={"email": email, "password": password},
+            f"{ROUTE_PREFIX}/login",
+            data={"username": email, "password": password},
         )
+        print(response.json())
         assert (
             response.status_code == 200
         ), f"Unexpected status code: {response.status_code}"
