@@ -32,3 +32,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
+
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.0.0"
+flake8 = "^6.0.0"
