@@ -1,4 +1,3 @@
-# Use the Python 3.13 slim base image
 FROM python:3.13-slim
 
 # Install system dependencies
