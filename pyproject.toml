@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "auth-services"
 version = "0.1.0"
-description = "Service responsible to register and authenticate users"
+description = "Api responsible to manage users access services"
 authors = ["Almerindo Uazela <almerindo.uazela@gmail.com>"]
 readme = "README.md"
 
@@ -22,6 +22,8 @@ pytest-asyncio = "^0.25.1"
 pydantic-settings = "^2.0"
 bcrypt = "3.2.2"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+pytest = "^8.3.4"
+flake8 = "^7.1.1"
 
 
 [build-system]
@@ -31,7 +33,3 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
-
-[tool.poetry.dev-dependencies]
-pytest = "^8.3.4"
-flake8 = "^7.1.1"
