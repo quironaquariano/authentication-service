@@ -23,7 +23,7 @@ pydantic-settings = "^2.0"
 bcrypt = "3.2.2"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
 flake8 = "^7.1.1"
 

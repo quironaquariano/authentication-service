@@ -1,4 +1,4 @@
-name: Auth Service CI
+name: Python application
 
 on:
   push:
@@ -14,33 +14,50 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # Especificar o environment
+    environment: TEST
+
     steps:
-    # Step 1: Checkout the repository
+    # Passo 1: Checkout do repositório
     - uses: actions/checkout@v4
 
-    # Step 2: Set up Python (use the version available in GitHub Actions)
+    # Passo 2: Configurar Python
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: "3.12" 
+        python-version: "3.12"
 
-    # Step 3: Install Poetry
+    # Passo 3: Instalar Poetry
     - name: Install Poetry
       run: |
         pip install poetry
 
-    # Step 4: Set up virtual environment and install dependencies
+    # Passo 4: Instalar dependências
     - name: Install dependencies
       run: |
         poetry config virtualenvs.create false
-        poetry install --no-interaction --no-ansi --no-root
+        poetry install --no-interaction --no-ansi --no-root --with dev
 
-    # Step 5: Run tests
+    # Passo 5: Executar testes
     - name: Run tests
+      env:
+        APP_NAME: ${{ vars.APP_NAME }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        JWT_ALGORITHM: ${{ secrets.JWT_ALGORITHM }}
+        ACCESS_TOKEN_EXPIRE_MINUTES: ${{ vars.ACCESS_TOKEN_EXPIRE_MINUTES }}
+        RESET_PASSWORD_TOKEN_EXPIRE_MINUTES: ${{ vars.RESET_PASSWORD_TOKEN_EXPIRE_MINUTES }}
+        TOKEN_URL: ${{ vars.TOKEN_URL }}
+        SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+        SMTP_PORT: ${{ vars.SMTP_PORT }}
+        SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+        SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+        FRONTEND_URL: ${{ vars.FRONTEND_URL }}
+        SMTP_FROM_EMAIL: ${{ vars.SMTP_FROM_EMAIL }}
       run: |
         poetry run pytest
 
-    # Step 6: Lint with flake8
+    # Passo 6: Executar linting
     - name: Lint with flake8
       run: |
         poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics

@@ -1,3 +1,4 @@
+import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -16,8 +17,10 @@ class Settings(BaseSettings):
     FRONTEND_URL: str
     SMTP_FROM_EMAIL: str
 
+    # Carrega o arquivo .env apenas em desenvolvimento local
     model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8"
+        env_file=(".env" if not os.getenv("CI") else None),
+        env_file_encoding="utf-8",
     )
 
 
