@@ -1,4 +1,4 @@
-name: Python application
+name: Authentication Services CI
 
 on:
   push:
@@ -13,48 +13,44 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
-    # Passo 1: Checkout do repositório
+    # Step 1: Checkout the repository
     - uses: actions/checkout@v4
 
-    # Passo 2: Configurar Python
-    - name: Set up Python ${{ matrix.python-version }}
+    # Step 2: Install Python 3.13 manually
+    - name: Install Python 3.13
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y software-properties-common
+        sudo add-apt-repository ppa:deadsnakes/ppa
+        sudo apt-get update
+        sudo apt-get install -y python3.13 python3.13-distutils
+
+    # Step 3: Set up Python 3.13
+    - name: Set up Python 3.13
       uses: actions/setup-python@v3
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: "3.13"
 
-    # Passo 3: Cache de dependências do Poetry
-    - name: Cache Poetry virtualenv
-      id: cache-poetry
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pypoetry/virtualenvs
-        key: poetry-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
-        restore-keys: |
-          poetry-${{ runner.os }}-${{ matrix.python-version }}-
-          poetry-${{ runner.os }}-
-
-    # Passo 4: Instalar Poetry
+    # Step 4: Install Poetry
     - name: Install Poetry
       run: |
-        pip install poetry
+        python3.13 -m pip install poetry
 
-    # Passo 5: Configurar o ambiente virtual e instalar dependências
+    # Step 5: Set up virtual environment and install dependencies
     - name: Set up virtual environment and install dependencies
       run: |
+        poetry env use python3.13
         poetry install --no-root
 
-    # Passo 6: Lint com flake8
+    # Step 6: Lint with flake8
     - name: Lint with flake8
       run: |
         poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-    # Passo 7: Executar testes com pytest
+    # Step 7: Run tests with pytest
     - name: Test with pytest
       run: |
         poetry run pytest
