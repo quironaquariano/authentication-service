@@ -9,7 +9,8 @@ app = FastAPI(title=settings.APP_NAME)
 database.configure(settings.DATABASE_URL)
 
 # Initialize production database
-database.create_tables()
+if not settings.TESTING:
+    database.create_tables()
 
 # Include routers
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])

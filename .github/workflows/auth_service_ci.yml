@@ -1,4 +1,4 @@
-name: Python application
+name: Auth Service CI
 
 on:
   push:
@@ -11,7 +11,6 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     # Especificar o environment
@@ -42,7 +41,8 @@ jobs:
     - name: Run tests
       env:
         APP_NAME: ${{ vars.APP_NAME }}
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        DATABASE_URL: "sqlite:///./test.db"  # Usar SQLite em arquivo temporário
+        TESTING: "True"  # Habilitar modo de teste
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         JWT_ALGORITHM: ${{ secrets.JWT_ALGORITHM }}
         ACCESS_TOKEN_EXPIRE_MINUTES: ${{ vars.ACCESS_TOKEN_EXPIRE_MINUTES }}

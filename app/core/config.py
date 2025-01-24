@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str
     FRONTEND_URL: str
     SMTP_FROM_EMAIL: str
+    TESTING: bool = False
 
     # Carrega o arquivo .env apenas em desenvolvimento local
     model_config = SettingsConfigDict(
