@@ -6,7 +6,7 @@ authors = ["Almerindo Uazela <almerindo.uazela@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.13"
+python = "^3.12"
 fastapi = {extras = ["all"], version = "^0.115.6"}
 uvicorn = {extras = ["standard"], version = "^0.34.0"}
 sqlalchemy = "^2.0.36"
@@ -22,14 +22,14 @@ pytest-asyncio = "^0.25.1"
 pydantic-settings = "^2.0"
 bcrypt = "3.2.2"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+
+[tool.poetry.dev-dependencies]
 pytest = "^8.3.4"
 flake8 = "^7.1.1"
-
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"

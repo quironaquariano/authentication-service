@@ -1,3 +1,4 @@
+# Use the official Python 3.12 slim image
 FROM python:3.12-slim
 
 # Install system dependencies
@@ -20,7 +21,7 @@ COPY pyproject.toml poetry.lock ./
 
 # Install project dependencies (including dev dependencies)
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi --no-root
+    && poetry install --no-interaction --no-ansi --no-root --with dev
 
 # Copy the application source code
 COPY ./app ./app
