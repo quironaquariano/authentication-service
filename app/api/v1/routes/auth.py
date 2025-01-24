@@ -14,7 +14,7 @@ router = APIRouter()
 
 
 @router.post("/register", response_model=UserResponse)
-def register(
+async def register(
     user: UserCreate,
     db_session: Annotated[Session, Depends(database.get_session)],
 ):
@@ -26,7 +26,7 @@ def register(
 
 
 @router.post("/login", response_model=TokenResponse)
-def login(
+async def login(
     credentials: OAuth2PasswordRequestForm = Depends(),
     db_session: Session = Depends(database.get_session),
 ):

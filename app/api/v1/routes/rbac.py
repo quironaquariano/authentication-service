@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.dependecies.rbac import rbac
 from app.dependecies.auth import auth_dependencies
 from app.models.user import User
-from app.schemas.rbac import AssignPermissionForm, AssignRoleForm
+from app.schemas.rbac import AssignPermission, AssignRole
 from app.services.rbac_service import RBACService
 from app.core.db import database
 
@@ -35,7 +35,7 @@ async def create_permission(
 
 @router.post("/assign-permissions")
 async def assign_permissions(
-    form: AssignPermissionForm,
+    form: AssignPermission,
     db: Session = Depends(database.get_session),
     current_user=Depends(auth_dependencies.ge_current_user),
 ):
@@ -48,7 +48,7 @@ async def assign_permissions(
 
 @router.post("/assign-role")
 async def assign_role(
-    form: AssignRoleForm,
+    form: AssignRole,
     db: Session = Depends(database.get_session),
     current_user=Depends(auth_dependencies.ge_current_user),
 ):

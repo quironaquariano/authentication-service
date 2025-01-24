@@ -14,11 +14,11 @@ class RoleResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class AssignRoleForm(BaseModel):
+class AssignRole(BaseModel):
     user_email: EmailStr
     role_name: str
 
 
-class AssignPermissionForm(BaseModel):
+class AssignPermission(BaseModel):
     role_name: str
     permission_name: str | list[str]

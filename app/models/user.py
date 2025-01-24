@@ -16,3 +16,6 @@ class User(Base):
     roles = relationship(
         "Role", secondary=user_role_table, back_populates="users"
     )
+    password_reset_tokens = relationship(
+        "PasswordResetToken", back_populates="user"
+    )

@@ -17,3 +17,8 @@ class UserResponse(BaseModel):
     email: EmailStr
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ResetPassword(BaseModel):
+    new_password: str
+    token: str
