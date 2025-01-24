@@ -1,0 +1,60 @@
+name: Python application
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+    # Passo 1: Checkout do repositório
+    - uses: actions/checkout@v4
+
+    # Passo 2: Configurar Python
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    # Passo 3: Cache de dependências do Poetry
+    - name: Cache Poetry virtualenv
+      id: cache-poetry
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pypoetry/virtualenvs
+        key: poetry-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
+        restore-keys: |
+          poetry-${{ runner.os }}-${{ matrix.python-version }}-
+          poetry-${{ runner.os }}-
+
+    # Passo 4: Instalar Poetry
+    - name: Install Poetry
+      run: |
+        pip install poetry
+
+    # Passo 5: Configurar o ambiente virtual e instalar dependências
+    - name: Set up virtual environment and install dependencies
+      run: |
+        poetry install --no-root
+
+    # Passo 6: Lint com flake8
+    - name: Lint with flake8
+      run: |
+        poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+    # Passo 7: Executar testes com pytest
+    - name: Test with pytest
+      run: |
+        poetry run pytest
