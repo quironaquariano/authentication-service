@@ -1,4 +1,4 @@
-name: Authentication Services CI
+name: Auth Service CI
 
 on:
   push:
@@ -18,39 +18,18 @@ jobs:
     # Step 1: Checkout the repository
     - uses: actions/checkout@v4
 
-    # Step 2: Install Python 3.13 manually
-    - name: Install Python 3.13
+    # Step 2: Build the Docker image
+    - name: Build Docker image
       run: |
-        sudo apt-get update
-        sudo apt-get install -y software-properties-common
-        sudo add-apt-repository ppa:deadsnakes/ppa
-        sudo apt-get update
-        sudo apt-get install -y python3.13 python3.13-distutils
+        docker build -t auth-service .
 
-    # Step 3: Set up Python 3.13
-    - name: Set up Python 3.13
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.13"
-
-    # Step 4: Install Poetry
-    - name: Install Poetry
+    # Step 3: Run tests inside the container
+    - name: Run tests
       run: |
-        python3.13 -m pip install poetry
+        docker run --rm auth-service poetry run pytest
 
-    # Step 5: Set up virtual environment and install dependencies
-    - name: Set up virtual environment and install dependencies
-      run: |
-        poetry env use python3.13
-        poetry install --no-root
-
-    # Step 6: Lint with flake8
+    # Step 4: Run linting with flake8 inside the container
     - name: Lint with flake8
       run: |
-        poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-
-    # Step 7: Run tests with pytest
-    - name: Test with pytest
-      run: |
-        poetry run pytest
+        docker run --rm auth-service poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        docker run --rm auth-service poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
