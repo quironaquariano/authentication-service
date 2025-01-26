@@ -14,16 +14,16 @@ The **Auth Service** is a standalone authentication module built with **FastAPI*
 
 - **JWT Tokens**  
   Provide signed tokens for session-based authentication with built-in expiration support.
-
----
-
-## 🔮 **Future Features**
-
+  
 - **Role-Based Access Control (RBAC):**  
   Enable role and permission management to restrict endpoint access based on user roles.
 
 - **Password Recovery:**  
   Provide endpoints for password reset with email integration.
+
+---
+
+## 🔮 **Future Features**
 
 - **Service Integration:**  
   Allow external services, such as e-commerce platforms, to consume the Auth Service for authentication and authorization.
